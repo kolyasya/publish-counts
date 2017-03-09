@@ -4,6 +4,7 @@ Counts = {};
 Counts.publish = function(self, name, cursor, options) {
   var initializing = true;
   var handle;
+  var pullingHandle;
   options = options || {};
 
   var extraField, countFn;
@@ -35,8 +36,8 @@ Counts.publish = function(self, name, cursor, options) {
   }
 
 
-  if (countFn && options.nonReactive)
-    throw new Error("options.nonReactive is not yet supported with options.countFromFieldLength or options.countFromFieldSum");
+  // if (countFn && options.nonReactive)
+    // throw new Error("options.nonReactive is not yet supported with options.countFromFieldLength or options.countFromFieldSum");
 
   if (cursor && cursor._cursorDescription) {
     cursor._cursorDescription.options.fields =
@@ -53,7 +54,7 @@ Counts.publish = function(self, name, cursor, options) {
       }
 
       if (!initializing)
-        self.changed('counts', name, {count: count});
+        if(!options.pullingInterval) self.changed('counts', name, {count: count});
     },
     removed: function(doc) {
       if (countFn) {
@@ -61,7 +62,7 @@ Counts.publish = function(self, name, cursor, options) {
       } else {
         count -= 1;
       }
-      self.changed('counts', name, {count: count});
+      if(!options.pullingInterval) self.changed('counts', name, {count: count});
     }
   };
 
@@ -71,7 +72,7 @@ Counts.publish = function(self, name, cursor, options) {
         count += countFn(newDoc) - countFn(oldDoc);
       }
 
-      self.changed('counts', name, {count: count});
+      if(!options.pullingInterval) self.changed('counts', name, {count: count});
     };
   }
 
@@ -84,17 +85,32 @@ Counts.publish = function(self, name, cursor, options) {
   if (!options.nonReactive)
     handle = cursor.observe(observers);
 
-  if (countFn)
+  if (countFn){
+    if(options.nonReactive) {
+      count = cursor.fetch().reduce((previous, doc) => (previous + countFn(doc)), 0) || 0
+    }
+
     self.added('counts', name, {count: count});
+  }
+
+  if(options.pullingInterval) {
+    pullingHandle = Meteor.setInterval(function() {
+      self.changed('counts', name, {count: count});
+    }, options.pullingInterval);
+  }
 
   if (!options.noReady)
     self.ready();
+
 
   initializing = false;
 
   self.onStop(function() {
     if (handle)
       handle.stop();
+
+    if(pullingHandle)
+      Meteor.clearTimeout(pullingHandle);
   });
 
   return {

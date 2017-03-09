@@ -1,7 +1,7 @@
 Package.describe({
-  name: "tmeasday:publish-counts",
-  summary: "Publish the count of a cursor, in real time",
-  version: "0.8.0",
+  name: "btafel:publish-counts",
+  summary: "Publish the count of a cursor, in real time or with pulling time",
+  version: "0.9.0",
   git: "https://github.com/percolatestudio/publish-counts.git"
 });
 
@@ -18,7 +18,7 @@ Package.on_use(function (api, where) {
 
 Package.on_test(function (api) {
   api.use([
-    'tmeasday:publish-counts',
+    'btafel:publish-counts',
     'underscore',
     'tinytest',
     'mongo',
