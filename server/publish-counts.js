@@ -44,59 +44,63 @@ Counts.publish = function(self, name, cursor, options) {
       Counts._optimizeQueryFields(cursor._cursorDescription.options.fields, extraField, options.noWarnings);
   }
 
-  var count = 0;
-  var observers = {
-    added: function(doc) {
-      if (countFn) {
-        count += countFn(doc);
-      } else {
-        count += 1;
-      }
+  if(!options.pullingInterval){
+    var count = 0;
+    var observers = {
+      added: function(doc) {
+        if (countFn) {
+          count += countFn(doc);
+        } else {
+          count += 1;
+        }
 
-      if (!initializing)
-        if(!options.pullingInterval) self.changed('counts', name, {count: count});
-    },
-    removed: function(doc) {
-      if (countFn) {
-        count -= countFn(doc);
-      } else {
-        count -= 1;
+        if (!initializing)
+          self.changed('counts', name, {count: count});
+      },
+      removed: function(doc) {
+        if (countFn) {
+          count -= countFn(doc);
+        } else {
+          count -= 1;
+        }
+        self.changed('counts', name, {count: count});
       }
-      if(!options.pullingInterval) self.changed('counts', name, {count: count});
-    }
-  };
-
-  if (countFn) {
-    observers.changed = function(newDoc, oldDoc) {
-      if (countFn) {
-        count += countFn(newDoc) - countFn(oldDoc);
-      }
-
-      if(!options.pullingInterval) self.changed('counts', name, {count: count});
     };
-  }
 
-  if (!countFn) {
-    self.added('counts', name, {count: cursor.count()});
-    if (!options.noReady)
-      self.ready();
-  }
+    if (countFn) {
+      observers.changed = function(newDoc, oldDoc) {
+        if (countFn) {
+          count += countFn(newDoc) - countFn(oldDoc);
+        }
 
-  if (!options.nonReactive)
-    handle = cursor.observe(observers);
-
-  if (countFn){
-    if(options.nonReactive) {
-      count = cursor.fetch().reduce((previous, doc) => (previous + countFn(doc)), 0) || 0
+        self.changed('counts', name, {count: count});
+      };
     }
 
-    self.added('counts', name, {count: count});
-  }
+    if (!countFn) {
+      self.added('counts', name, {count: cursor.count()});
+      if (!options.noReady)
+        self.ready();
+    }
 
-  if(options.pullingInterval) {
+    if (!options.nonReactive)
+      handle = cursor.observe(observers);
+
+    if (countFn){
+      if(options.nonReactive) {
+        count = cursor.fetch().reduce((previous, doc) => (previous + countFn(doc)), 0) || 0
+      }
+
+      self.added('counts', name, {count: count});
+    }
+  } else {
+
+    self.added('counts', name, {count: cursor.count()});
+    
     pullingHandle = Meteor.setInterval(function() {
-      self.changed('counts', name, {count: count});
+      self.changed('counts', name, {count: cursor.count()});
     }, options.pullingInterval);
+
   }
 
   if (!options.noReady)
@@ -109,8 +113,9 @@ Counts.publish = function(self, name, cursor, options) {
     if (handle)
       handle.stop();
 
+    console.log("publish count onStop, clearing interval", pullingHandle);
     if(pullingHandle)
-      Meteor.clearTimeout(pullingHandle);
+      Meteor.clearInterval(pullingHandle);
   });
 
   return {
@@ -119,6 +124,13 @@ Counts.publish = function(self, name, cursor, options) {
         handle.stop();
         handle = undefined;
       }
+
+      if(pullingHandle){
+        console.log("publish count stop, clearing interval", pullingHandle);
+        Meteor.clearInterval(pullingHandle);
+        pullingHandle = undefined;
+      }
+
     }
   };
 };
