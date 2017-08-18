@@ -113,7 +113,7 @@ Counts.publish = function(self, name, cursor, options) {
     if (handle)
       handle.stop();
 
-    console.log("publish count onStop, clearing interval", pullingHandle);
+    // console.log("publish count onStop, clearing interval", pullingHandle);
     if(pullingHandle)
       Meteor.clearInterval(pullingHandle);
   });
@@ -126,7 +126,7 @@ Counts.publish = function(self, name, cursor, options) {
       }
 
       if(pullingHandle){
-        console.log("publish count stop, clearing interval", pullingHandle);
+        // console.log("publish count stop, clearing interval", pullingHandle);
         Meteor.clearInterval(pullingHandle);
         pullingHandle = undefined;
       }
