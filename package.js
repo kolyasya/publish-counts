@@ -1,7 +1,7 @@
 Package.describe({
   name: "btafel:publish-counts",
   summary: "Publish the count of a cursor, in real time or with pulling time",
-  version: "0.9.1",
+  version: "0.9.2",
   git: "https://github.com/percolatestudio/publish-counts.git"
 });
 
