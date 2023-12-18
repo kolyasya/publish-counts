@@ -5,10 +5,13 @@ if (Meteor.isServer) {
 
     Counts.publish(pub, 'posts' + test.id, cursor, { countFromField: function (doc) { return doc.likes; } });
 
-    var fields = cursor._cursorDescription.options.fields;
+    const fields = cursor._cursorDescription.options.fields;
+    const projection = cursor._cursorDescription.options.projection;
+
+    const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
 
     // verify no restrictions were set.
-    test.isUndefined(fields, 'Count must keep empty cursor fields limits when user uses accessor function');
+    test.isUndefined(fieldsToUse, 'Count must keep empty cursor fields limits when user uses accessor function');
   });
 
   { // WARNING TESTS
@@ -56,12 +59,15 @@ if (Meteor.isServer) {
 
     Counts.publish(pub, 'posts' + test.id, cursor, { countFromField: function (doc) { return doc.likes; } });
 
-    var fields = cursor._cursorDescription.options.fields;
+    const fields = cursor._cursorDescription.options.fields;
+    const projection = cursor._cursorDescription.options.projection;
 
-    test.isNotUndefined(fields, 'cursor is missing fields property');
-    test.isNotUndefined(fields.likes, 'cursor is missing field (likes)');
+    const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
+
+    test.isNotUndefined(fieldsToUse, 'cursor is missing fields property');
+    test.isNotUndefined(fieldsToUse.likes, 'cursor is missing field (likes)');
     // verify only two fields are fetched.
-    test.length(_.keys(fields), 1, 'cursor has more/less fields than specified');
+    test.length(_.keys(fieldsToUse), 1, 'cursor has more/less fields than specified');
   });
 
   // the user should always include the field used in the accessor function in the cursor field limit.
@@ -73,12 +79,15 @@ if (Meteor.isServer) {
 
     Counts.publish(pub, 'posts' + test.id, cursor, { countFromField: function (doc) { return doc.likes; } });
 
-    var fields = cursor._cursorDescription.options.fields;
+    const fields = cursor._cursorDescription.options.fields;
+    const projection = cursor._cursorDescription.options.projection;
 
-    test.isNotUndefined(fields, 'cursor is missing fields property');
-    test.isNotUndefined(fields.likes, 'cursor is missing field (likes)');
-    test.isNotUndefined(fields.name, 'cursor is missing field (name)');
+    const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
+
+    test.isNotUndefined(fieldsToUse, 'cursor is missing fields property');
+    test.isNotUndefined(fieldsToUse.likes, 'cursor is missing field (likes)');
+    test.isNotUndefined(fieldsToUse.name, 'cursor is missing field (name)');
     // verify only three fields are fetched.
-    test.length(_.keys(fields), 2, 'cursor has more/less fields than specified');
+    test.length(_.keys(fieldsToUse), 2, 'cursor has more/less fields than specified');
   });
 }

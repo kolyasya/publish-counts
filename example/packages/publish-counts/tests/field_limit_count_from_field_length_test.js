@@ -5,13 +5,16 @@ if (Meteor.isServer) {
 
     Counts.publish(pub, 'posts' + test.id, cursor, { countFromField: 'likes' });
 
-    var fields = cursor._cursorDescription.options.fields;
+    const fields = cursor._cursorDescription.options.fields;
+    const projection = cursor._cursorDescription.options.projection;
 
-    test.isNotUndefined(fields, 'cursor is missing fields property');
-    test.isNotUndefined(fields._id, 'cursor is missing field (_id)');
-    test.isNotUndefined(fields.likes, 'cursor is missing field (likes)');
+    const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
+
+    test.isNotUndefined(fieldsToUse, 'cursor is missing fields property');
+    test.isNotUndefined(fieldsToUse._id, 'cursor is missing field (_id)');
+    test.isNotUndefined(fieldsToUse.likes, 'cursor is missing field (likes)');
     // verify only two fields are fetched.
-    test.equal(_.keys(fields).length, 2, 'cursor has more/less than two fields');
+    test.equal(_.keys(fieldsToUse).length, 2, 'cursor has more/less than two fields');
   });
 
   Tinytest.add("fieldLimit: (countFromFieldLength) - upon publish with count field assigned to field limit, keep existing field limit plus _id", function (test) {
@@ -20,13 +23,16 @@ if (Meteor.isServer) {
 
     Counts.publish(pub, 'posts' + test.id, cursor, { countFromField: 'likes' });
 
-    var fields = cursor._cursorDescription.options.fields;
+    const fields = cursor._cursorDescription.options.fields;
+    const projection = cursor._cursorDescription.options.projection;
 
-    test.isNotUndefined(fields, 'cursor is missing fields property');
-    test.isNotUndefined(fields._id, 'cursor is missing field (_id)');
-    test.isNotUndefined(fields.likes, 'cursor is missing field (likes)');
+    const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
+
+    test.isNotUndefined(fieldsToUse, 'cursor is missing fields property');
+    test.isNotUndefined(fieldsToUse._id, 'cursor is missing field (_id)');
+    test.isNotUndefined(fieldsToUse.likes, 'cursor is missing field (likes)');
     // verify only two fields are fetched.
-    test.equal(_.keys(fields).length, 2, 'cursor has more/less fields than specified (plus _id)');
+    test.equal(_.keys(fieldsToUse).length, 2, 'cursor has more/less fields than specified (plus _id)');
   });
 
   // honestly, devs should never have a reason to do this.  the 'name' field in this example is never used, nor can it ever be.
@@ -37,14 +43,17 @@ if (Meteor.isServer) {
 
     Counts.publish(pub, 'posts' + test.id, cursor, { countFromField: 'likes' });
 
-    var fields = cursor._cursorDescription.options.fields;
+    const fields = cursor._cursorDescription.options.fields;
+    const projection = cursor._cursorDescription.options.projection;
 
-    test.isNotUndefined(fields, 'cursor is missing fields property');
-    test.isNotUndefined(fields._id, 'cursor is missing field (_id)');
-    test.isNotUndefined(fields.likes, 'cursor is missing field (likes)');
-    test.isNotUndefined(fields.name, 'cursor is missing field (name)');
+    const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
+
+    test.isNotUndefined(fieldsToUse, 'cursor is missing fields property');
+    test.isNotUndefined(fieldsToUse._id, 'cursor is missing field (_id)');
+    test.isNotUndefined(fieldsToUse.likes, 'cursor is missing field (likes)');
+    test.isNotUndefined(fieldsToUse.name, 'cursor is missing field (name)');
     // verify only three fields are fetched.
-    test.equal(_.keys(fields).length, 3, 'cursor has more/less fields than specified (plus _id and likes)');
+    test.equal(_.keys(fieldsToUse).length, 3, 'cursor has more/less fields than specified (plus _id and likes)');
   });
 
   { // WARNING TESTS

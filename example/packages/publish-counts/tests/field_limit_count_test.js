@@ -5,12 +5,15 @@ if (Meteor.isServer) {
 
     Counts.publish(pub, 'posts' + test.id, cursor);
 
-    var fields = cursor._cursorDescription.options.fields;
+    const fields = cursor._cursorDescription.options.fields;
+    const projection = cursor._cursorDescription.options.projection;
 
-    test.isNotUndefined(fields, 'cursor is missing fields property');
-    test.isNotUndefined(fields._id, 'cursor is missing _id field');
+    const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
+
+    test.isNotUndefined(fieldsToUse, 'cursor is missing fields property');
+    test.isNotUndefined(fieldsToUse._id, 'cursor is missing _id field');
     // verify only one field is fetched.
-    test.equal(_.keys(fields).length, 1, 'cursor has more than one field')
+    test.equal(_.keys(fieldsToUse).length, 1, 'cursor has more than one field')
   });
 
   Tinytest.add("fieldLimit: (count) - upon publish with field limit, always limit cursor fields to _id", function (test) {
@@ -19,12 +22,15 @@ if (Meteor.isServer) {
 
     Counts.publish(pub, 'posts' + test.id, cursor);
 
-    var fields = cursor._cursorDescription.options.fields;
+    const fields = cursor._cursorDescription.options.fields;
+    const projection = cursor._cursorDescription.options.projection;
 
-    test.isNotUndefined(fields, 'cursor is missing fields property');
-    test.isNotUndefined(fields._id, 'cursor is missing field (_id)');
+    const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
+
+    test.isNotUndefined(fieldsToUse, 'cursor is missing fields property');
+    test.isNotUndefined(fieldsToUse._id, 'cursor is missing field (_id)');
     // verify only two fields are fetched.
-    test.equal(_.keys(fields).length, 1, 'cursor has more than one field');
+    test.equal(_.keys(fieldsToUse).length, 1, 'cursor has more than one field');
   });
 
   { // WARNING TESTS
