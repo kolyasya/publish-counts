@@ -4,6 +4,7 @@ Counts = {};
 Counts.publish = function(self, name, cursor, options) {
   var initializing = true;
   var handle;
+  var pullingHandle;
   options = options || {};
 
   var extraField, countFn;
@@ -35,66 +36,86 @@ Counts.publish = function(self, name, cursor, options) {
   }
 
 
-  if (countFn && options.nonReactive)
-    throw new Error("options.nonReactive is not yet supported with options.countFromFieldLength or options.countFromFieldSum");
+  // if (countFn && options.nonReactive)
+    // throw new Error("options.nonReactive is not yet supported with options.countFromFieldLength or options.countFromFieldSum");
 
   if (cursor && cursor._cursorDescription) {
     cursor._cursorDescription.options.fields =
       Counts._optimizeQueryFields(cursor._cursorDescription.options.fields || cursor._cursorDescription.options.projection, extraField, options.noWarnings);
   }
 
-  var count = 0;
-  var observers = {
-    added: function(doc) {
-      if (countFn) {
-        count += countFn(doc);
-      } else {
-        count += 1;
-      }
+  if(!options.pullingInterval){
+    var count = 0;
+    var observers = {
+      added: function(doc) {
+        if (countFn) {
+          count += countFn(doc);
+        } else {
+          count += 1;
+        }
 
-      if (!initializing)
+        if (!initializing)
+          self.changed('counts', name, {count: count});
+      },
+      removed: function(doc) {
+        if (countFn) {
+          count -= countFn(doc);
+        } else {
+          count -= 1;
+        }
         self.changed('counts', name, {count: count});
-    },
-    removed: function(doc) {
-      if (countFn) {
-        count -= countFn(doc);
-      } else {
-        count -= 1;
       }
-      self.changed('counts', name, {count: count});
-    }
-  };
-
-  if (countFn) {
-    observers.changed = function(newDoc, oldDoc) {
-      if (countFn) {
-        count += countFn(newDoc) - countFn(oldDoc);
-      }
-
-      self.changed('counts', name, {count: count});
     };
-  }
 
-  if (!countFn) {
+    if (countFn) {
+      observers.changed = function(newDoc, oldDoc) {
+        if (countFn) {
+          count += countFn(newDoc) - countFn(oldDoc);
+        }
+
+        self.changed('counts', name, {count: count});
+      };
+    }
+
+    if (!countFn) {
+      self.added('counts', name, {count: cursor.count()});
+      if (!options.noReady)
+        self.ready();
+    }
+
+    if (!options.nonReactive)
+      handle = cursor.observe(observers);
+
+    if (countFn){
+      if(options.nonReactive) {
+        count = cursor.fetch().reduce((previous, doc) => (previous + countFn(doc)), 0) || 0
+      }
+
+      self.added('counts', name, {count: count});
+    }
+  } else {
+
     self.added('counts', name, {count: cursor.count()});
-    if (!options.noReady)
-      self.ready();
+    
+    pullingHandle = Meteor.setInterval(function() {
+      self.changed('counts', name, {count: cursor.count()});
+    }, options.pullingInterval);
+
   }
-
-  if (!options.nonReactive)
-    handle = cursor.observe(observers);
-
-  if (countFn)
-    self.added('counts', name, {count: count});
 
   if (!options.noReady)
     self.ready();
+
 
   initializing = false;
 
   self.onStop(function() {
     if (handle)
       handle.stop();
+
+    // console.log("publish count onStop, clearing interval", pullingHandle);
+    if(pullingHandle)
+      Meteor.clearInterval(pullingHandle);
   });
 
   return {
@@ -103,6 +124,13 @@ Counts.publish = function(self, name, cursor, options) {
         handle.stop();
         handle = undefined;
       }
+
+      if(pullingHandle){
+        // console.log("publish count stop, clearing interval", pullingHandle);
+        Meteor.clearInterval(pullingHandle);
+        pullingHandle = undefined;
+      }
+
     }
   };
 };
