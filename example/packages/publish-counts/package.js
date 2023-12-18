@@ -5,18 +5,18 @@ Package.describe({
   git: "https://github.com/kolyasya/publish-counts.git"
 });
 
-Package.on_use(function (api, where) {
+Package.onUse(function (api, where) {
   api.versionsFrom("METEOR@0.9.2");
   api.use(['blaze', 'templating'], 'client', { weak: true });
   api.use('mongo', 'client');
   api.use('underscore', 'server');
-  api.add_files('client/publish-counts.js', 'client');
-  api.add_files('server/publish-counts.js', 'server');
+  api.addFiles('client/publish-counts.js', 'client');
+  api.addFiles('server/publish-counts.js', 'server');
   api.export('Counts');
   api.export('publishCount', 'server');
 });
 
-Package.on_test(function (api) {
+Package.onTest(function (api) {
   api.use([
     'btafel:publish-counts',
     'underscore',
@@ -24,7 +24,7 @@ Package.on_test(function (api) {
     'mongo',
     'facts']);
 
-  api.add_files([
+  api.addFiles([
     'tests/helper.js',
     'tests/has_count_test.js',
     'tests/count_test.js',
