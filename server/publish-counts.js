@@ -1,7 +1,5 @@
 var noWarnings = false;
 
-console.log('test');
-
 Counts = {};
 Counts.publish = function(self, name, cursor, options) {
   var initializing = true;
