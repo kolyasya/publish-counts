@@ -1,3 +1,6 @@
+### ⚠️ This is a refactored version of `percolatestudio/publish-counts` and `btafel/publish-counts` packages merged together
+Work in progress in `feature/v1.0.0` branch
+
 # Publish Counts
 
 A package to help you publish the count of a cursor, in real time.
@@ -9,26 +12,26 @@ you will maximize your server's CPU usage as each client connects.
 
 ## Table of Contents
 
-- [Installation](https://github.com/percolatestudio/publish-counts#installation)
-- [API](https://github.com/percolatestudio/publish-counts#api)
-  - [Counts.publish](https://github.com/percolatestudio/publish-counts#countspublish-server)
-  - [Counts.get](https://github.com/percolatestudio/publish-counts#countsget-client)
-  - [Counts.has](https://github.com/percolatestudio/publish-counts#countshas-client)
-  - [Counts.noWarnings](https://github.com/percolatestudio/publish-counts#countsnowarnings-server)
-- [Options](https://github.com/percolatestudio/publish-counts#options)
-  - [noReady](https://github.com/percolatestudio/publish-counts#noready)
-  - [nonReactive](https://github.com/percolatestudio/publish-counts#nonreactive)
-  - [countFromField](https://github.com/percolatestudio/publish-counts#countfromfield)
-  - [countFromFieldLength](https://github.com/percolatestudio/publish-counts#countfromfieldlength)
-  - [noWarnings](https://github.com/percolatestudio/publish-counts#nowarnings)
-- [Template helpers](https://github.com/percolatestudio/publish-counts#template-helpers)
+- [Installation](https://github.com/kolyasya/publish-counts#installation)
+- [API](https://github.com/kolyasya/publish-counts#api)
+  - [Counts.publish](https://github.com/kolyasya/publish-counts#countspublish-server)
+  - [Counts.get](https://github.com/kolyasya/publish-counts#countsget-client)
+  - [Counts.has](https://github.com/kolyasya/publish-counts#countshas-client)
+  - [Counts.noWarnings](https://github.com/kolyasya/publish-counts#countsnowarnings-server)
+- [Options](https://github.com/kolyasya/publish-counts#options)
+  - [noReady](https://github.com/kolyasya/publish-counts#noready)
+  - [nonReactive](https://github.com/kolyasya/publish-counts#nonreactive)
+  - [countFromField](https://github.com/kolyasya/publish-counts#countfromfield)
+  - [countFromFieldLength](https://github.com/kolyasya/publish-counts#countfromfieldlength)
+  - [noWarnings](https://github.com/kolyasya/publish-counts#nowarnings)
+- [Template helpers](https://github.com/kolyasya/publish-counts#template-helpers)
 - [Notes]()
-  - [Observer handle leak testing](https://github.com/percolatestudio/publish-counts#observer-handle-leak-testing)
-  - [Why doesn't this library count directly in Mongo? or...](https://github.com/percolatestudio/publish-counts#why-doesnt-this-library-count-directly-in-mongo-or)
-  - [Scalable count packages](https://github.com/percolatestudio/publish-counts#scalable-count-packages)
-  - [Compatiblity with Meteor < v1.3](https://github.com/percolatestudio/publish-counts#compatibility-with-meteor--13)
-- [Frequently Asked Questions](https://github.com/percolatestudio/publish-counts#frequently-asked-questions) \[[Issues](https://github.com/percolatestudio/publish-counts/issues?q=label%3Afaq)]
-- [License](https://github.com/percolatestudio/publish-counts#license)
+  - [Observer handle leak testing](https://github.com/kolyasya/publish-counts#observer-handle-leak-testing)
+  - [Why doesn't this library count directly in Mongo? or...](https://github.com/kolyasya/publish-counts#why-doesnt-this-library-count-directly-in-mongo-or)
+  - [Scalable count packages](https://github.com/kolyasya/publish-counts#scalable-count-packages)
+  - [Compatiblity with Meteor < v1.3](https://github.com/kolyasya/publish-counts#compatibility-with-meteor--13)
+- [Frequently Asked Questions](https://github.com/kolyasya/publish-counts#frequently-asked-questions) \[[Issues](https://github.com/kolyasya/publish-counts/issues?q=label%3Afaq)]
+- [License](https://github.com/kolyasya/publish-counts#license)
 
 ## Installation
 

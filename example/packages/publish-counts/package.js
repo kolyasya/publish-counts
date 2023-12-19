@@ -1,8 +1,9 @@
 Package.describe({
   name: 'kolyasya:publish-counts',
   summary: 'Publish the count of a cursor, in real time or with pulling time',
-  version: '1.0.0',
+  version: '1.0.0-beta.1',
   git: 'https://github.com/kolyasya/publish-counts.git',
+  documentation: '../../../README.md',
 });
 
 Package.onUse(function (api, where) {
@@ -21,7 +22,7 @@ Package.onUse(function (api, where) {
 
 Package.onTest(function (api) {
   api.use([
-    'btafel:publish-counts',
+    'kolyasya:publish-counts',
     'underscore',
     'tinytest',
     'mongo',
