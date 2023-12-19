@@ -36,7 +36,7 @@ you will maximize your server's CPU usage as each client connects.
 ## Installation
 
 ``` sh
-$ meteor add tmeasday:publish-counts
+$ meteor add kolyasya:publish-counts
 ```
 
 ## API
