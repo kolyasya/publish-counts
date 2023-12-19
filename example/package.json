@@ -2,19 +2,16 @@
   "name": "example",
   "private": true,
   "scripts": {
-    "start": "meteor run",
-    "test": "meteor test-packages --port 4000",
-    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
-    "visualize": "meteor --production --extra-packages bundle-visualizer"
+    "start": "meteor npm install; meteor --exclude-archs web.browser.legacy,web.cordova",
+    "test": "meteor test-packages --port 4000"
   },
   "dependencies": {
-    "@babel/runtime": "^7.23.5",
+    "@babel/runtime": "^7.23.6",
     "meteor-node-stubs": "^1.2.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/mocha": "^8.2.3",
     "@types/node": "^18.16.5",
     "@types/react": "^18.2.5",
     "@types/react-dom": "^18.2.4",

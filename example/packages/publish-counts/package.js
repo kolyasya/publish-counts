@@ -1,17 +1,20 @@
 Package.describe({
-  name: "kolyasya:publish-counts",
-  summary: "Publish the count of a cursor, in real time or with pulling time",
-  version: "1.0.0",
-  git: "https://github.com/kolyasya/publish-counts.git"
+  name: 'kolyasya:publish-counts',
+  summary: 'Publish the count of a cursor, in real time or with pulling time',
+  version: '1.0.0',
+  git: 'https://github.com/kolyasya/publish-counts.git',
 });
 
 Package.onUse(function (api, where) {
-  api.versionsFrom("METEOR@0.9.2");
-  api.use(['blaze', 'templating'], 'client', { weak: true });
+  api.versionsFrom('2.8.0');
   api.use('mongo', 'client');
   api.use('underscore', 'server');
-  api.addFiles('client/publish-counts.js', 'client');
-  api.addFiles('server/publish-counts.js', 'server');
+
+  api.use(['ecmascript']);
+
+  api.mainModule('client/publish-counts.js', 'client');
+  api.mainModule('server/publish-counts.js', 'server');
+
   api.export('Counts');
   api.export('publishCount', 'server');
 });
@@ -22,7 +25,8 @@ Package.onTest(function (api) {
     'underscore',
     'tinytest',
     'mongo',
-    'facts']);
+    'facts',
+  ]);
 
   api.addFiles([
     'tests/helper.js',
