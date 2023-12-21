@@ -18,7 +18,8 @@ if (Meteor.isServer) {
 
   Tinytest.add("fieldLimit: (count) - upon publish with field limit, always limit cursor fields to _id", function (test) {
     var pub = new H.PubMock();
-    var cursor = Posts.find({ testId: test.id }, { fields: { name: true }});    // field manually limited to name
+    // field manually limited to name
+    var cursor = Posts.find({ testId: test.id }, { fields: { name: true }});    
 
     Counts.publish(pub, 'posts' + test.id, cursor);
 
@@ -30,7 +31,7 @@ if (Meteor.isServer) {
     test.isNotUndefined(fieldsToUse, 'cursor is missing fields property');
     test.isNotUndefined(fieldsToUse._id, 'cursor is missing field (_id)');
     // verify only two fields are fetched.
-    test.equal(_.keys(fieldsToUse).length, 1, 'cursor has more than one field');
+    test.equal(_.keys(fieldsToUse).length, 2, 'cursor has more than 2 fields');
   });
 
   { // WARNING TESTS

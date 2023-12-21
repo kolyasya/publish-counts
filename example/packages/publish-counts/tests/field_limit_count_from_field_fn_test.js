@@ -10,8 +10,10 @@ if (Meteor.isServer) {
 
     const fieldsToUse = { ...(fields || {}), ...(projection || {}) };
 
+    console.log({ fieldsToUse })
+
     // verify no restrictions were set.
-    test.isUndefined(fieldsToUse, 'Count must keep empty cursor fields limits when user uses accessor function');
+    test.equal(fieldsToUse, {}, 'Count must keep empty cursor fields limits when user uses accessor function');
   });
 
   { // WARNING TESTS
@@ -25,7 +27,7 @@ if (Meteor.isServer) {
                  "with warnings, in development, warn user that entire documents are fetched", function (test) {
       var pub = new H.PubMock();
       var cursor = Posts.find({ testId: test.id });   // no field limit
-      var conmock = { warn: H.detectRegex(/Collection cursor has no field limits and will fetch entire documents.  consider specifying only required fields./) };
+      var conmock = { warn: H.detectRegex(/Collection cursor has no field limits and will fetch entire documents. Consider specifying only required fields/) };
 
       H.withConsole(conmock, function () {
         Counts.publish(pub, 'posts' + test.id, cursor, { countFromField: function (doc) { return doc.likes; } });
